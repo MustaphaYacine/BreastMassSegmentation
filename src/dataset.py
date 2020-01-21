@@ -13,9 +13,10 @@ class MassSegmentationDataset(Dataset):
         return len(self.list_dir)
 
     def __getitem__(self, item):
-        path = os.path.join(self.root_dir, self.list_dir[item])
-        img = cv2.imread(os.listdir(path)[0])  # we can use just one channel [:,:,0]
-        mask = cv2.imread(os.listdir(path)[-1])[:, :, 0]
+        base_path = os.path.join(self.root_dir, self.list_dir[item])
+        (dir_path, dir_names, file_names) = [x for x in os.walk(base_path)][-1]
+        img = cv2.imread(dir_path + "/imageReshapedFilterApplied.png")  # we can use just one channel [:,:,0]
+        mask = cv2.imread(dir_path + "/maskReshaped.png")[:, :, 0]
         # change the shape from (H,W,C) to (C,H,W)
         img = img.transpose(2, 0, 1)
         mask = mask.transpose(2, 0, 1)
