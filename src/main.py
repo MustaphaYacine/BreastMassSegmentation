@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 import torchvision.transforms as transforms
 import numpy as np
+from torch.optim import lr_scheduler
 
 
 def combined_transform(img, mask):
@@ -50,7 +51,8 @@ def dataloaders(train_root_dir, transform, batch_size=4, valid_size=0.2):
 def main():
     train_root_dir = '/content/drive/My Drive/DDSM/train/CBIS-DDSM'
     test_root_dir = '/content/drive/My Drive/DDSM/test/CBIS-DDSM'
-    batch_size = 2
+    path_weights = '/content/drive/My Drive/DDSM/weights'
+    batch_size = 3
     valid_size = 0.2
     nb_epochs = 20
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -60,11 +62,10 @@ def main():
 
     model = UNet(in_channels=3, out_channels=1)
     model.to(device)
+    optimizer = optim.Adam(model.parameters(), lr=0.01)
+    exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=len(loaders['train']), gamma=0.4)
 
-    optimizer = optim.Adam(model.parameters(), lr=0.3)
-    scheduler = None  # not yet
-
-    model = train(model, optimizer, scheduler, loaders, nb_epochs, device, path_weights='./')
+    model = train(model, optimizer, exp_lr_scheduler, loaders, nb_epochs, device, path_weights)
     # from torchsummary import summary
     #
     # summary(model, input_size=(3, 224, 224))

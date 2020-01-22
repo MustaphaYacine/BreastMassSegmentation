@@ -15,4 +15,4 @@ def test(model, test_loader, device='cpu'):
 
     epoch_time = time.time() - start_epoch_time
     print('{:.0f}m {:.0f}s'.format(epoch_time // 60, epoch_time % 60))
-    print('Best metric val : {:4f}'.format(1-metrics['Dice_score']))
+    print('Best metric val : {:4f}'.format(1-metrics['Dice_score']/len(test_loader)))
