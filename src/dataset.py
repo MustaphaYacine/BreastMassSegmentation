@@ -18,9 +18,8 @@ class MassSegmentationDataset(Dataset):
         img = cv2.imread(dir_path + "/imageReshapedFilterApplied.png")  # we can use just one channel [:,:,0]
         mask = cv2.imread(dir_path + "/maskReshaped.png")
         # change the shape from (H,W,C) to (C,H,W)
-        img = img.transpose(2, 0, 1)
         mask = mask.transpose(2, 0, 1)
-        mask = np.expand_dims(mask[0,:,:],axis=0)
+        mask = np.expand_dims(mask[0,:,:],axis=0).transpose(1,2,0)
         if self.transform:
             img, mask = self.transform(img, mask)
         return img, mask
