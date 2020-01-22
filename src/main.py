@@ -17,7 +17,6 @@ def combined_transform(img, mask):
     ])
     transform_mask = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize((0.5,), (0.5,))
     ])
     return transform_img(img), transform_mask(mask)
 
