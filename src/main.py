@@ -44,7 +44,7 @@ def dataloaders(train_root_dir, transform, batch_size=4, valid_size=0.2):
         num_workers=0
     )
     return {'train': train_loader,
-            'valid': valid_loader}
+            'validation': valid_loader}
 
 
 def main():
@@ -52,7 +52,7 @@ def main():
     test_root_dir = '/content/drive/My Drive/DDSM/test/CBIS-DDSM'
     batch_size = 2
     valid_size = 0.2
-
+    nb_epochs = 20
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # data loaders
@@ -64,7 +64,7 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=0.3)
     scheduler = None  # not yet
 
-    model = train(model, optimizer, scheduler, loaders, nb_epochs=20, device='cpu', path_weights='./')
+    model = train(model, optimizer, scheduler, loaders, nb_epochs, device, path_weights='./')
     # from torchsummary import summary
     #
     # summary(model, input_size=(3, 224, 224))

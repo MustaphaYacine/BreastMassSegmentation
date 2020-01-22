@@ -27,14 +27,17 @@ def train(model, optimizer, scheduler, dataloaders, nb_epochs=20, device='cpu', 
                 model.eval()
             metrics = defaultdict(float)
             epoch_size = 0
+            i=0
             for images, labels in dataloaders[phase]:
                 images = images.to(device)
                 labels = labels.to(device)
                 optimizer.zero_grad()
-
+                i+=1
                 with torch.set_grad_enabled(phase == 'train'):
                     masks = model(images)
                     loss, metrics = calculate_loss(masks, labels, metrics)
+                    if i%50 == 0:
+                        print('i == {}, loss == {}'.format(i,loss.item()))
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
