@@ -9,7 +9,7 @@ import numpy as np
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from .loss import calculate_loss
+from loss import calculate_loss
 
 
 

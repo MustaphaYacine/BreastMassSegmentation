@@ -1,6 +1,6 @@
 import time
 from collections import defaultdict
-from .loss import calculate_loss
+from loss import calculate_loss
 
 def test(model, test_loader, device='cpu'):
     print("-"*30 , "\nTest:\n")

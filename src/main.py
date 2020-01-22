@@ -1,7 +1,7 @@
-from .model import UNet
-from .dataset import MassSegmentationDataset
-from .train import train
-from .test import test
+from model import UNet
+from dataset import MassSegmentationDataset
+from train import train
+from test import test
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
@@ -18,7 +18,7 @@ def combined_transform(img, mask):
     return transform(img), transform(mask)
 
 
-def dataloaders(train_root_dir, transform, batch_size=4):
+def dataloaders(train_root_dir, transform, batch_size=4,valid_size=0.2):
     train_data = MassSegmentationDataset(train_root_dir, transform)
     num_train = len(train_data)
     indices = list(range(num_train))
@@ -43,36 +43,38 @@ def dataloaders(train_root_dir, transform, batch_size=4):
     return {'train': train_loader,
             'valid': valid_loader}
 
+def main():
+    train_root_dir = '/content/drive/My Drive/DDSM/train/CBIS-DDSM'
+    test_root_dir = '/content/drive/My Drive/DDSM/test/CBIS-DDSM'
+    batch_size = 2
+    valid_size = 0.2
 
-train_root_dir = '/content/drive/My Drive/DDSM/train/CBIS-DDSM'
-test_root_dir = '/content/drive/My Drive/DDSM/test/CBIS-DDSM'
-batch_size = 2
-valid_size = 0.2
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # data loaders
+    loaders = dataloaders(train_root_dir, combined_transform, batch_size,valid_size)
 
-# data loaders
-loaders = dataloaders(train_root_dir, combined_transform, batch_size)
+    model = UNet(in_channels=3, out_channels=1)
+    model.to(device)
 
-model = UNet(in_channels=3, out_channels=1)
-model.to(device)
+    optimizer = optim.Adam(model.parameters(), lr=0.3)
+    scheduler = None  # not yet
 
-optimizer = optim.Adam(model.parameters(), lr=0.3)
-scheduler = None  # not yet
+    model = train(model, optimizer, scheduler, loaders, nb_epochs=20, device='cpu', path_weights='./')
+    # from torchsummary import summary
+    #
+    # summary(model, input_size=(3, 224, 224))
 
-model = train(model, optimizer, scheduler, loaders, nb_epochs=20, device='cpu', path_weights='./')
-# from torchsummary import summary
-#
-# summary(model, input_size=(3, 224, 224))
+    test_transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    ])
+    test_loader = DataLoader(
+        MassSegmentationDataset(test_root_dir, test_transform),
+        batch_size=batch_size,
+        num_workers=0
+    )
 
-test_transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-])
-test_loader = DataLoader(
-    MassSegmentationDataset(test_root_dir, test_transform),
-    batch_size=batch_size,
-    num_workers=0
-)
-
-test(model, test_loader, device)
+    test(model, test_loader, device)
+# if __name__ == '__main__':
+main()
