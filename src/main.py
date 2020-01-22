@@ -51,7 +51,7 @@ def dataloaders(train_root_dir, transform, batch_size=4, valid_size=0.2):
 def main():
     train_root_dir = '/content/drive/My Drive/DDSM/train/CBIS-DDSM'
     test_root_dir = '/content/drive/My Drive/DDSM/test/CBIS-DDSM'
-    path_weights = '/content/drive/My Drive/DDSM/weights'
+    path_weights = '/content/drive/My Drive/Cv/weights'
     batch_size = 3
     valid_size = 0.2
     nb_epochs = 20
@@ -63,7 +63,7 @@ def main():
     model = UNet(in_channels=3, out_channels=1)
     model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=0.01)
-    exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=len(loaders['train']), gamma=0.4)
+    exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=4, gamma=0.3)
 
     model = train(model, optimizer, exp_lr_scheduler, loaders, nb_epochs, device, path_weights)
     # from torchsummary import summary

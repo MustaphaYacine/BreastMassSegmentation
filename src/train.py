@@ -20,8 +20,6 @@ def train(model, optimizer, scheduler, dataloaders, nb_epochs=20, device='cpu', 
         for phase in ['train', 'validation']:
             print('----- {} -----'.format(phase))
             if phase == 'train':
-                if scheduler:
-                    scheduler.step()
                 model.train()
             else:
                 model.eval()
@@ -42,6 +40,9 @@ def train(model, optimizer, scheduler, dataloaders, nb_epochs=20, device='cpu', 
                         loss.backward()
                         optimizer.step()
                 epoch_size += images.size(0)
+            if phase == 'train':
+                if scheduler:
+                    scheduler.step()
             epoch_loss = metrics['Dice_score'] / len(dataloaders[phase])  # // epoch_size
             if phase == 'validation' and epoch_loss < best_score:
                 print('best model updated, metric *** changed from {}, to {}'
