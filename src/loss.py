@@ -18,8 +18,17 @@ class DiceLoss(nn.Module):
 
 
 def calculate_loss(masks, labels, metrics):
+    alpha = 0.8
     dice_loss = DiceLoss()
-    loss = dice_loss(masks,labels)
-    #metrics['IOU'] += 1
-    metrics['Dice_score'] += loss.item()
-    return loss,metrics
+    bce_loss = nn.BCELoss()
+
+    dice_loss_val = dice_loss(masks, labels)
+    bce_loss_val = bce_loss(masks,labels)
+
+    loss = dice_loss_val + alpha * bce_loss_val
+
+    metrics['BCE_loss'] += bce_loss_val.item()
+    metrics['Dice_score'] += 1 - dice_loss_val.item()
+    metrics['loss'] += loss.item()
+
+    return loss, metrics

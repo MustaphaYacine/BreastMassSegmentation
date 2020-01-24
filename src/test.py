@@ -2,8 +2,9 @@ import time
 from collections import defaultdict
 from loss import calculate_loss
 
+
 def test(model, test_loader, device='cpu'):
-    print("-"*30 , "\nTest:\n")
+    print("-" * 30, "\nTest:\n")
     start_epoch_time = time.time()
     model.eval()
     metrics = defaultdict(float)
@@ -15,4 +16,7 @@ def test(model, test_loader, device='cpu'):
 
     epoch_time = time.time() - start_epoch_time
     print('{:.0f}m {:.0f}s'.format(epoch_time // 60, epoch_time % 60))
-    print('Best metric val : {:4f}'.format(1-metrics['Dice_score']/len(test_loader)))
+    print('Best metrics: BCE_loss= {} , Dice_score= {} , || loss = {}'
+          .format(metrics['BCE_loss'] / len(test_loader),
+                  metrics['Dice_score'] / len(test_loader),
+                  metrics['loss'] / len(test_loader)))
