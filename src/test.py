@@ -16,7 +16,8 @@ def test(model, test_loader, device='cpu'):
 
     epoch_time = time.time() - start_epoch_time
     print('{:.0f}m {:.0f}s'.format(epoch_time // 60, epoch_time % 60))
-    print('Best metrics: BCE_loss= {} , Dice_score= {} , || loss = {}'
+    print('Best metrics: BCE_loss= {:.3f} , Dice_score= {:.3f} ,  IOU= {:.3f}, || loss = {:.3f}'
           .format(metrics['BCE_loss'] / len(test_loader),
                   metrics['Dice_score'] / len(test_loader),
+                  metrics['IOU'] / len(test_loader),
                   metrics['loss'] / len(test_loader)))
