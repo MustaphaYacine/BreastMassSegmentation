@@ -9,6 +9,7 @@ class Iou(nn.Module):
 
     def forward(self, y_pred, y_true):
         assert y_pred.size() == y_true.size()
+        y_pred = apply_threshold(y_pred)
         y_pred = y_pred.view(-1)
         y_true = y_true.view(-1)  # y_true[:, 0].contiguous().view(-1)
         intersection = (y_pred * y_true).sum()
@@ -43,7 +44,13 @@ def calculate_loss(masks, labels, metrics):
     loss = dice_loss_val + alpha * bce_loss_val
 
     metrics['BCE_loss'] += bce_loss_val.item()
-    metrics['Dice_score'] += 1 - dice_loss_val.item()
+    metrics['Dice_score'] += 1 - dice_loss(apply_threshold(masks),labels).item()
     metrics['loss'] += loss.item()
-    metrics['IOU'] += iou(masks,labels)
+    metrics['IOU'] += iou(masks, labels).item()
     return loss, metrics
+
+
+def apply_threshold(x, threshold=0.5):
+    if threshold:
+        return (x > threshold).type_as(x)
+    return x
